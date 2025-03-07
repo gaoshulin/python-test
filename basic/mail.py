@@ -41,10 +41,14 @@ def send_main_message(email, subject, content, file_path=''):
 
     # 确保 From 头格式正确
     msg['From'] = f'{sender_name} <{sender_email}>'
-    msg['To'] = Header(email, 'utf-8')
-    msg['Subject'] = Header(subject, 'utf-8')
+    msg['To'] = email
+    msg['Subject'] = subject
     # 邮件正文内容 - 文本
     msg.attach(MIMEText(content, 'plain', 'utf-8'))
+
+    # 接受 html 内容
+    # htmlContent = "<html><body><h1>Hello</h1></body></html>"
+    # msg.attach(MIMEText(htmlContent, 'html', 'utf-8'))
 
     try:
         # 如果有附件，添加附件到邮件中
@@ -69,8 +73,9 @@ def send_main_message(email, subject, content, file_path=''):
     except FileNotFoundError:
         print(f"附件文件 {file_path} 未找到。")
     finally:
-        # 关闭SMTP连接
-        smtp_obj.quit()
+        # 确保 smtp_obj 已定义并成功创建
+        if 'smtp_obj' in locals():
+            smtp_obj.quit()
 
 
 # 示例调用
