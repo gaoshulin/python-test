@@ -1,3 +1,8 @@
+"""
+mysql-connector-python 库操作 mysql 数据库
+
+@author: Galen
+"""
 import mysql.connector
 import yaml
 
@@ -98,8 +103,8 @@ def delete_users(name):
     :return: 关闭数据库连接
 """
 def close_connection():
-    conn.close()
     cursor.close()
+    conn.close()
     print("数据库连接已关闭")
 
 
