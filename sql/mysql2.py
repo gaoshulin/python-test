@@ -13,13 +13,6 @@ with open(config_file, 'r', encoding='utf-8') as f:
     config = yaml.safe_load(f)
     env_conf = config.get('mysql', {})
 
-# 判断是否存在mysql配置
-if not env_conf:
-    # 退出程序
-    print("mysql config not found")
-    exit()
-
-
 # 连接数据库
 def connet_db():
     try:
