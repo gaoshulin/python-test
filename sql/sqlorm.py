@@ -16,9 +16,7 @@ with open(config_file, 'r', encoding='utf-8') as f:
     env = config.get('mysql', {}) 
 
 # 创建数据库引擎，这里使用 pymysql 作为驱动
-engine = create_engine(
-    "mysql+pymysql://%s:%s@%s:%s/%s" % (env['user'], env['password'], env['host'], env['port'], env['database'])
-)
+engine = create_engine("mysql+pymysql://%s:%s@%s:%s/%s" % (env['user'], env['password'], env['host'], env['port'], env['database']))
 
 # 创建一个基类，用于定义数据库模型
 Base = declarative_base()
