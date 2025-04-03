@@ -3,7 +3,9 @@ from typing import Annotated
 from fastapi import FastAPI, Query, Depends, Header, Cookie, UploadFile
 from pydantic import BaseModel
 from fastapi import HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from users import router
+
 
 # 依赖注入
 async def verify_token(x_token: str = Header()):
@@ -21,6 +23,15 @@ async def verify_key(x_key: str = Header()):
 # 全局依赖注入
 app = FastAPI(dependencies=[Depends(verify_token), Depends(verify_key)])
 app.include_router(router, tags=["users"])
+
+# 允许跨域请求
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=['*'],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 class Cookies(BaseModel):
