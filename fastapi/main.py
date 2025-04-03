@@ -1,24 +1,31 @@
 from typing import Union
 from typing import Annotated
-from fastapi import FastAPI, Query, Cookie, Header, Form, File, UploadFile
+from fastapi import FastAPI, Query, Depends, Header, Cookie, UploadFile
 from pydantic import BaseModel
 from fastapi import HTTPException
 
-app = FastAPI()
+
+# 依赖注入
+async def verify_token(x_token: str = Header()):
+    if x_token != "fake-super-secret-token":
+        raise HTTPException(status_code=400, detail="X-Token header invalid")
+
+
+# 依赖注入
+async def verify_key(x_key: str = Header()):
+    if x_key != "fake-super-secret-key":
+        raise HTTPException(status_code=400, detail="X-Key header invalid")
+    return x_key
+
+
+# 全局依赖注入
+app = FastAPI(dependencies=[Depends(verify_token), Depends(verify_key)])
 
 
 class Cookies(BaseModel):
     session_id: str
     fatebook_tracker: str | None = None
     googall_tracker: str | None = None
-
-    
-class CommonHeaders(BaseModel):
-    host: str
-    save_data: bool
-    if_modified_since: str | None = None
-    traceparent: str | None = None
-    x_tag: list[str] = []
 
 
 class FormData(BaseModel):
@@ -71,30 +78,6 @@ async def create_item(item: Item):
     return item
 
 
-@app.post("/headers")
-async def read_header(headers: Annotated[CommonHeaders, Header()]):
-    return headers
-
-    
-# 请求体
-@app.post("/cookies")
-async def read_cookie(cookies: Annotated[Cookies, Cookie()]):
-    return cookies
-
-
-@app.post("/login")
-async def login(form_data: Annotated[FormData, Form()]):
-    return form_data
-
-
-@app.post("/files/")
-async def create_file(file: bytes | None = File(default=None)):
-    if not file:
-        return {"message": "No file sent"}
-    else:
-        return {"file_size": len(file)}
-
-
 @app.post("/uploadfile/")
 async def create_upload_file(file: UploadFile | None = None):
     if not file:
@@ -107,4 +90,3 @@ async def create_upload_file(file: UploadFile | None = None):
 
 # 启动命令
 # uvicorn main:app --reload
-
